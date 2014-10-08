@@ -4,7 +4,7 @@ Plugin Name: ark-relatedpost
 Author: Александр Каратаев
 Plugin URI: http://blog.ddw.kz/novyj-plagin-vyvoda-svyazannyx-zapisej-ark-relatedpost.html
 Description: Вывод связанных записей на основе тегов
-Version: 2.1
+Version: 2.2
 Author URI: http://blog.ddw.kz
 License: GPL2
 */
@@ -86,8 +86,8 @@ add_action( 'admin_enqueue_scripts', 'add_admin_iris_scripts' );
 // Вывод страницы опций в субменю
 function ark_rp_options_page() {
 	screen_icon('users');
-    echo '<h2>Плагин&nbsp;ark-relatedpost&nbsp;2.1</h2><div style="clear: both;float:right;"><a href="http://blog.ddw.kz/podderzhka-proektov-avtora-etogo-bloga
-" target="_blank"><img align="right" src="' . plugins_url( '/img/button-donate.png', __FILE__ ) . '" alt="Пожертвовать" border="0" /></a></div>';
+    echo '<h2>Плагин&nbsp;ark-relatedpost&nbsp;2.1</h2><div style="clear: both;float:right;"><noindex><a rel="nofollow" href="http://blog.ddw.kz/podderzhka-proektov-avtora-etogo-bloga
+" target="_blank"><img align="right" src="' . plugins_url( '/img/button-donate.png', __FILE__ ) . '" alt="Пожертвовать" border="0" /></a></noindex></div>';
 ?>	
 <div class="wrap">
 <h2>Настройки связанных записей</h2>

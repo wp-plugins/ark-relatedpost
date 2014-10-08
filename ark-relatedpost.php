@@ -4,7 +4,7 @@ Plugin Name: ark-relatedpost
 Author: Александр Каратаев
 Plugin URI: http://blog.ddw.kz/novyj-plagin-vyvoda-svyazannyx-zapisej-ark-relatedpost.html
 Description: Вывод связанных записей на основе тегов
-Version: 2.0
+Version: 2.1
 Author URI: http://blog.ddw.kz
 License: GPL2
 */
@@ -45,6 +45,7 @@ delete_option( 'ark_relpost' );
 function ark_init_option() {
 $ark_option = array(
 'ark_imgsize' => '70',
+'ark_imgurl' => '',
 'ark_maxword' => '24',
 'ark_bgcolor' => '#FFF',
 'ark_bordercolor' => '#C7C7C7',
@@ -84,8 +85,9 @@ function add_admin_iris_scripts( $hook ){
 add_action( 'admin_enqueue_scripts', 'add_admin_iris_scripts' );
 // Вывод страницы опций в субменю
 function ark_rp_options_page() {
-    echo "<h2>Плагин ark-relatedpost</h2>";
 	screen_icon('users');
+    echo '<h2>Плагин&nbsp;ark-relatedpost&nbsp;2.1</h2><div style="clear: both;float:right;"><a href="http://blog.ddw.kz/podderzhka-proektov-avtora-etogo-bloga
+" target="_blank"><img align="right" src="' . plugins_url( '/img/button-donate.png', __FILE__ ) . '" alt="Пожертвовать" border="0" /></a></div>';
 ?>	
 <div class="wrap">
 <h2>Настройки связанных записей</h2>
@@ -93,6 +95,7 @@ function ark_rp_options_page() {
 if (isset($_POST['save'])) {
 $ark_option = array(
 'ark_imgsize' => $_POST['ark_imgsize'],
+'ark_imgurl' => $_POST['ark_imgurl'],
 'ark_maxword' => $_POST['ark_maxword'],
 'ark_bgcolor' => $_POST['ark_bgcolor'],
 'ark_bordercolor' => $_POST['ark_bordercolor'],
@@ -170,6 +173,9 @@ $result = get_option('ark_relpost');
 <tr valign="top">
 <td>Ширина миниатюры <input type="number" min="0" max="150" name="ark_imgsize" size="3" value="<?php echo $result['ark_imgsize']; ?>" /><b>px</b>&nbsp;</td>
 <td><i>Чтобы не выводить миниатюру - установите ширину в ноль.</i></td>
+</tr></table><table><tr>
+<td><input type="url" name="ark_imgurl" size="50" placeholder="Введите URL своей картинки" value="<?php echo $result['ark_imgurl']; ?>" /></td>
+<td><i>URL собственной картинки-заглушки, которая будет выводиться когда не найдена миниатюра. Может располагаться на стороннем хосте.</i></td>
 </tr><tr>
 <td colspan="2">&nbsp;Количество выводимых постов <input type="number" min="1" max="40" name="ark_maxposts" size="2" value="<?php echo $result['ark_maxposts']; ?>" /></td>
 </tr></table>
@@ -235,16 +241,31 @@ function set_style_arkrp() {
 add_action( 'wp_enqueue_scripts', 'set_style_arkrp' );
 
 //  Пропорциональное изменение картинок
-function ark_that_image() {
+function ark_that_image($userimgurl) {
 $image_id = get_post_thumbnail_id();
 $image_url = wp_get_attachment_image_src($image_id);
 $image_url = $image_url[0];
   if(empty($image_url)) {
-    //$image_url = "http://blog.ddw.kz/wp-content/uploads/2013/obg.png"; // Ссылка на заглушку
-	$image_url = plugins_url( '/img/ark-noimage.png', __FILE__ );
+	$image_url = ark_get_post_image();
+	  if(empty($image_url)) {
+		if (empty($userimgurl)) {
+			$image_url = plugins_url( '/img/ark-noimage.png', __FILE__ );
+			} else {
+			$image_url = $userimgurl;
+		}
+	}
   }
 return $image_url;
 }	
+function ark_get_post_image() {
+  global $post, $posts;
+  $first_img = '';
+  ob_start();
+  ob_end_clean();
+  $output = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $post->post_content, $matches);
+  $first_img = $matches [1] [0];
+  return $first_img;
+}
 // Материалы по теме 	
 function get_ark_related_posts() {	
 $result = get_option('ark_relpost');
@@ -252,6 +273,7 @@ $arkImgSize = $result['ark_imgsize'];
 $arkMaxWord = $result['ark_maxword'];
 $arkTitle = $result['ark_title'];
 $arkWidth = $result['ark_width'];
+$userimgurl = $result['ark_imgurl'];
 $MaxGPosts = 0;
 if ($result['ark_source']==0) {
 	$tags = wp_get_post_tags(get_the_ID());
@@ -317,7 +339,7 @@ if ($result['ark_source']==0) {
 				$arkimgalign = 'top';
 				$arksubtitle = '<center>' . $arksubtitle . '</center>';
 		  }
-		  $arkpimg = '<img width="' . $result['ark_imgsize'] . 'px" height="' . $result['ark_imgsize'] . 'px" align="'.$arkimgalign.'" src="' . ark_that_image() . '" />';	
+		  $arkpimg = '<img width="' . $result['ark_imgsize'] . 'px" height="' . $result['ark_imgsize'] . 'px" align="'.$arkimgalign.'" src="' . ark_that_image($userimgurl) . '" />';	
 		 if ($result['ark_imgsize']>0) {
 			$arkrp = '<a href="'.$arkpostlinks.'">';
 			$arkrp = $arkrp . $arkpimg;	

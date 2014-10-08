@@ -1,10 +1,10 @@
 === ARK Related Posts ===
 Contributors: AlexKar
-Donate link: http://blog.ddw.kz
+Donate link: http://blog.ddw.kz/podderzhka-proektov-avtora-etogo-bloga
 Tags: related, posts, post
 Requires at least: 3.0
-Tested up to: 4.3
-Stable tag: 2.0
+Tested up to: 4.0
+Stable tag: 2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,3 +52,8 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Upgrade Notice ==
 * Первая версия
+
+= 2.1 =
+* В случае отсутствия миниатюры записи, плагин вставляет первое изображение из этой записи, даже если оно физически размещено на стороннем хосте.
+Если нет и изибражения, тогда вставляется картинка заглушка.
+* Добавлена возможность задать URL собственной картинки-заглушки. Картинка может быть на стороннем хосте.

@@ -4,7 +4,7 @@ Plugin Name: ark-relatedpost
 Author: Александр Каратаев
 Plugin URI: http://blog.ddw.kz/novyj-plagin-vyvoda-svyazannyx-zapisej-ark-relatedpost.html
 Description: Вывод связанных записей на основе тегов
-Version: 2.2
+Version: 2.3
 Author URI: http://blog.ddw.kz
 License: GPL2
 */
@@ -48,10 +48,14 @@ $ark_option = array(
 'ark_imgurl' => '',
 'ark_maxword' => '24',
 'ark_bgcolor' => '#FFF',
+'ark_nobgcolor' => '0',
 'ark_bordercolor' => '#C7C7C7',
+'ark_nobordercolor' => '0',
 'ark_width' => '96',
 'ark_title' => 'Материалы по теме:',
 'ark_titlecolor' => '#215B9B',
+'ark_titleshadow' => '1',
+'ark_titleshadowcolor' => '#5DB6FA',
 'ark_titlefontsize' => '20',
 'ark_textcolor' => '#000',
 'ark_textfontsize' => '12',
@@ -62,6 +66,10 @@ $ark_option = array(
 'ark_maxposts' => '5',
 'ark_maxgposts' => '4',
 'ark_source' => '0',
+'ark_borderradius' => '10',
+'ark_imgborderradius' => '4',
+'ark_first' => '0',
+'ark_hand' => '0',
 );
 add_option('ark_relpost', $ark_option,'','no');
 }
@@ -86,7 +94,7 @@ add_action( 'admin_enqueue_scripts', 'add_admin_iris_scripts' );
 // Вывод страницы опций в субменю
 function ark_rp_options_page() {
 	screen_icon('users');
-    echo '<h2>Плагин&nbsp;ark-relatedpost&nbsp;2.1</h2><div style="clear: both;float:right;"><noindex><a rel="nofollow" href="http://blog.ddw.kz/podderzhka-proektov-avtora-etogo-bloga
+    echo '<h2>Плагин&nbsp;ark-relatedpost&nbsp;2.3</h2><div style="clear: both;float:right; padding-right:20px;"><noindex><a rel="nofollow" href="http://blog.ddw.kz/podderzhka-proektov-avtora-etogo-bloga
 " target="_blank"><img align="right" src="' . plugins_url( '/img/button-donate.png', __FILE__ ) . '" alt="Пожертвовать" border="0" /></a></noindex></div>';
 ?>	
 <div class="wrap">
@@ -98,9 +106,13 @@ $ark_option = array(
 'ark_imgurl' => $_POST['ark_imgurl'],
 'ark_maxword' => $_POST['ark_maxword'],
 'ark_bgcolor' => $_POST['ark_bgcolor'],
+'ark_nobgcolor' => $_POST['ark_nobgcolor'],
 'ark_bordercolor' => $_POST['ark_bordercolor'],
+'ark_nobordercolor' => $_POST['ark_nobordercolor'],
 'ark_width' => $_POST['ark_width'],
 'ark_titlecolor' => $_POST['ark_titlecolor'],
+'ark_titleshadow' => $_POST['ark_titleshadow'],
+'ark_titleshadowcolor' => $_POST['ark_titleshadowcolor'],
 'ark_textcolor' => $_POST['ark_textcolor'],
 'ark_titlefontsize' => $_POST['ark_titlefontsize'],
 'ark_textfontsize' => $_POST['ark_textfontsize'],
@@ -112,6 +124,10 @@ $ark_option = array(
 'ark_title' => $_POST['ark_title'],
 'ark_maxgposts' => $_POST['ark_maxgposts'],
 'ark_source' => $_POST['ark_source'],
+'ark_borderradius' => $_POST['ark_borderradius'],
+'ark_imgborderradius' => $_POST['ark_imgborderradius'],
+'ark_first' => $_POST['ark_first'],
+'ark_hand' => $_POST['ark_hand'],
 );
 update_option('ark_relpost', $ark_option);
 echo '<div id="setting-error-settings_updated" class="updated settings-error"><p><b>'.__('Settings saved.').'</b></p></div>';
@@ -144,20 +160,24 @@ $result = get_option('ark_relpost');
 <h3>Основной блок</h3>
 <table>
 <tr>
-<td><b>Фон блока</b></td>
+<td><b>Фон блока:</b>&nbsp;&nbsp;Прозрачный <input type="checkbox" name="ark_nobgcolor" value="1" <?php if ($result['ark_nobgcolor'] == 1) { echo "checked"; } ?>/>&nbsp;или&nbsp;</td>
 <td><input class="iris_color" name="ark_bgcolor" type="text" value="<?php echo $result['ark_bgcolor']; ?>" />
 </td>
 <td><i>Основной фон блока вывода связанных записей</i></td>
 </tr><tr>
-<td><b>Цвет рамки блока</b></td>
+<td><b>Цвет рамки блока:</b>&nbsp;&nbsp;Убрать рамку <input type="checkbox" name="ark_nobordercolor" value="1" <?php if ($result['ark_nobordercolor'] == 1) { echo "checked"; } ?>/>&nbsp;или&nbsp;</td>
 <td><input class="iris_color" name="ark_bordercolor" type="text" value="<?php echo $result['ark_bordercolor']; ?>" />
 </td>
-<td><i>Если рамка не нужна, установите цвет фона и цвет рамки одинаковыми.</i></td>
+<td><i>Если рамка не нужна, установите флажок "Убрать рамку".</i></td>
 </tr></table><table>
 <tr>
 <td>Ширина блока относительно родительского контейнера</td>
 <td><input type="number" min="10" max="100" name="ark_width" size="3" value="<?php echo $result['ark_width']; ?>" /> <b>%</b>&nbsp;</td>
 </tr>
+<tr>
+<td>Закругление углов блока (<i>ноль, если не надо</i>)</td>
+<td><input type="number" min="0" max="20" name="ark_borderradius" value="<?php echo $result['ark_borderradius']; ?>" /> </td>
+</tr><tr><td colspan="2"><br><hr></td></tr>
 </table>
 <br>
 <table>
@@ -167,6 +187,10 @@ $result = get_option('ark_relpost');
 <td>Размер шрифта <input type="number" min="8" max="36" name="ark_titlefontsize" size="2" value="<?php echo $result['ark_titlefontsize']; ?>" /> <b>px</b>&nbsp;</td>
 <td><input class="iris_color" name="ark_titlecolor" type="text" value="<?php echo $result['ark_titlecolor']; ?>" /></td>
 </tr>
+<tr>
+<td>Эффект тени шрифта заголовка <input type="checkbox" name="ark_titleshadow" value="1" <?php if ($result['ark_titleshadow'] == 1) { echo "checked"; } ?>/> </td>
+<td><input class="iris_color" name="ark_titleshadowcolor" type="text" value="<?php echo $result['ark_titleshadowcolor']; ?>" /></td>
+</tr><tr><td colspan="2"><br><hr></td></tr>
 </table>
 <br>
 <table>
@@ -174,9 +198,13 @@ $result = get_option('ark_relpost');
 <td>Ширина миниатюры <input type="number" min="0" max="150" name="ark_imgsize" size="3" value="<?php echo $result['ark_imgsize']; ?>" /><b>px</b>&nbsp;</td>
 <td><i>Чтобы не выводить миниатюру - установите ширину в ноль.</i></td>
 </tr></table><table><tr>
-<td><input type="url" name="ark_imgurl" size="50" placeholder="Введите URL своей картинки" value="<?php echo $result['ark_imgurl']; ?>" /></td>
+<td><input type="url" name="ark_imgurl" size="50" placeholder="Введите URL своей картинки" value="<?php echo $result['ark_imgurl']; ?>" /></td></tr><tr>
 <td><i>URL собственной картинки-заглушки, которая будет выводиться когда не найдена миниатюра. Может располагаться на стороннем хосте.</i></td>
-</tr><tr>
+</tr>
+<tr>
+<td>Закругление углов миниатюры (<i>ноль, если не надо</i>)&nbsp;<input type="number" min="0" max="20" name="ark_imgborderradius" value="<?php echo $result['ark_imgborderradius']; ?>" /><br><hr> </td>
+</tr>
+<tr>
 <td colspan="2">&nbsp;Количество выводимых постов <input type="number" min="1" max="40" name="ark_maxposts" size="2" value="<?php echo $result['ark_maxposts']; ?>" /></td>
 </tr></table>
 <br>
@@ -192,7 +220,7 @@ $result = get_option('ark_relpost');
 
 <table>
 <tr>
-<td>Ограничитель горизонтального вывода <input type="number" min="2" max="10" name="ark_maxgposts" size="3" value="<?php echo $result['ark_maxgposts']; ?>" /><br><i>Если записей выводится больше указанного количества, то они будут размещены с новой строки</i></td>
+<td>Ограничитель горизонтального вывода <input type="number" min="2" max="10" name="ark_maxgposts" size="3" value="<?php echo $result['ark_maxgposts']; ?>" /><br><i>Если записей выводится больше указанного количества, то они будут размещены с новой строки</i><br><hr></td>
 </tr>  
 </table>
 
@@ -204,24 +232,27 @@ $result = get_option('ark_relpost');
 </tr><tr>
 <td>Свой символ перед заголовком статьи&nbsp;&nbsp;<input name="ark_subtitlesymbol" type="text" size="2" value="<?php echo $result['ark_subtitlesymbol']; ?>" /></td>
 <td><i>Необязательно. Можно использовать по желанию, например: "☛", "☑", "●" или "▪"</i></td>
-</tr>
+</tr><tr><td colspan="2"><br><hr></td></tr>
 </table>
 
 <h3>Описание</h3>
 <table>
 <tr valign="top">
-<td>Количество слов в описании <input type="number" name="ark_maxword" size="4" value="<?php echo $result['ark_maxword']; ?>" /></td>
+<td>Количество слов в описании <input type="number" min="0" max="50" name="ark_maxword" size="4" value="<?php echo $result['ark_maxword']; ?>" /></td>
 <td><i>Чтобы не выводить описание - установите количество в ноль.</i></td>
 </tr><tr>
 <td>Размер шрифта <input type="number" min="8" max="18" name="ark_textfontsize" size="2" value="<?php echo $result['ark_textfontsize']; ?>" /> <b>px</b>&nbsp;</td>
 <td>&nbsp;<input class="iris_color" name="ark_textcolor" type="text" value="<?php echo $result['ark_textcolor']; ?>" /></td>
-</tr>
-
-<tr valign="top">
-<td></td>
-</tr>
+</tr><tr><td colspan="2"><br><hr></td></tr>
 </table>
-
+<!--<h3>Дополнительные опции</h3>
+<table><tr>
+<td>Пытаться вставлять блок раньше других вставок в контент&nbsp;&nbsp;<input type="checkbox" name="ark_first" value="1" <?php if ($result['ark_first'] == 1) { echo "checked"; } ?>/><br><hr></td>
+</tr><tr>
+<td>Разместить блок самостоятельно&nbsp;&nbsp;<input type="checkbox" name="ark_hand" value="1" <?php if ($result['ark_hand'] == 1) { echo "checked"; } ?>/><br>В этом случае для работы плагина необходимо в <b>single.php</b> в нужное место вставить строку:<br><br>
+	<?php $code = '<?php if (function_exists("ark_related_posts")) ark_related_posts(); ?>';
+	highlight_string($code); ?></td>
+</tr></table> -->
 <p class="submit">
 <input type="submit" name="save" class="button-primary" value="<?php _e('Save Changes') ?>" />
 <input name="reset" type="submit" class="button-primary" value="<?php _e('Восстановить настройки по умолчанию') ?>" />
@@ -274,6 +305,22 @@ $arkMaxWord = $result['ark_maxword'];
 $arkTitle = $result['ark_title'];
 $arkWidth = $result['ark_width'];
 $userimgurl = $result['ark_imgurl'];
+$arkborderradius = 'border-radius: '.$result['ark_borderradius'].'px;
+-moz-border-radius: '.$result['ark_borderradius'].'px '.$result['ark_borderradius'].'px '.$result['ark_borderradius'].'px '.$result['ark_borderradius'].'px;
+-webkit-border-bottom-left-radius:'.$result['ark_borderradius'].'px;
+-webkit-border-bottom-right-radius:'.$result['ark_borderradius'].'px;
+-webkit-border-top-left-radius:'.$result['ark_borderradius'].'px;
+-webkit-border-top-right-radius:'.$result['ark_borderradius'].'px;';
+$arkimgborderradius = 'border-radius: '.$result['ark_imgborderradius'].'px;
+-moz-border-radius: '.$result['ark_imgborderradius'].'px '.$result['ark_imgborderradius'].'px '.$result['ark_imgborderradius'].'px '.$result['ark_imgborderradius'].'px;
+-webkit-border-bottom-left-radius:'.$result['ark_imgborderradius'].'px;
+-webkit-border-bottom-right-radius:'.$result['ark_imgborderradius'].'px;
+-webkit-border-top-left-radius:'.$result['ark_imgborderradius'].'px;
+-webkit-border-top-right-radius:'.$result['ark_imgborderradius'].'px;';
+if ($result['ark_titleshadow'] == 1) {$arktitleshadow = 'text-shadow: '. $result['ark_titleshadowcolor'] .' 0px 1px 1px !important;'; } else {$arktitleshadow = 'text-shadow: 0px 0px 0px !important;';}
+if ($result['ark_nobgcolor'] == 1) {$arkbgcolor = 'background: none !important;'; } else {$arkbgcolor = 'background:' . $result['ark_bgcolor'] .' !important;';}
+if ($result['ark_nobordercolor'] == 1) {$arkborder = 'border: 0px !important;'; $arkborderradius=''; } else {$arkborder = 'border: 1px solid ' . $result['ark_bordercolor'] .' !important;';}
+
 $MaxGPosts = 0;
 if ($result['ark_source']==0) {
 	$tags = wp_get_post_tags(get_the_ID());
@@ -303,8 +350,8 @@ if ($result['ark_source']==0) {
 	$my_query = new wp_query($args);
 	$outtmp = '';
 	if( $my_query->have_posts() ) {
-		$arkrpbeg = '<div class="arkrelated" style="background:' . $result['ark_bgcolor'] . '; width:' . $result['ark_width'] .'%; border-color:' . $result['ark_bordercolor'] . ';">';
-		$arkrpbeg = $arkrpbeg . '<h3 style="color:' . $result['ark_titlecolor'] . '; font-size:' . $result['ark_titlefontsize'] . 'px;">' . $result['ark_title'] . '</h3>';
+		$arkrpbeg = '<div class="arkrelated" style="'.$arkbgcolor . ' width:' . $result['ark_width'] .'%; '.$arkborder.$arkborderradius.'">';
+		$arkrpbeg = $arkrpbeg . '<h3 style="color:' . $result['ark_titlecolor'] . '; font-size:' . $result['ark_titlefontsize'] . 'px; '.$arktitleshadow.'">' . $result['ark_title'] . '</h3>';
 		$arkrpbeg = $arkrpbeg . '<table width="100%" border="0">';
 		$arkrpend = '</table></div>';
 		$arksubtitlesymbol = trim($result['ark_subtitlesymbol']);
@@ -339,7 +386,7 @@ if ($result['ark_source']==0) {
 				$arkimgalign = 'top';
 				$arksubtitle = '<center>' . $arksubtitle . '</center>';
 		  }
-		  $arkpimg = '<img width="' . $result['ark_imgsize'] . 'px" height="' . $result['ark_imgsize'] . 'px" align="'.$arkimgalign.'" src="' . ark_that_image($userimgurl) . '" />';	
+		  $arkpimg = '<img width="' . $result['ark_imgsize'] . 'px" height="' . $result['ark_imgsize'] . 'px" align="'.$arkimgalign.'" style="'.$arkimgborderradius.'" src="' . ark_that_image($userimgurl) . '" />';	
 		 if ($result['ark_imgsize']>0) {
 			$arkrp = '<a href="'.$arkpostlinks.'">';
 			$arkrp = $arkrp . $arkpimg;	
@@ -368,7 +415,8 @@ if ($result['ark_source']==0) {
  }
 // Материалы по теме End 
 }
-add_filter( 'the_content', 'ark_related_posts_auto', 100 );
+
+add_filter( 'the_content', 'ark_related_posts_auto', 999 );
 function ark_related_posts_auto( $content ) {
 	if (is_single ()) {
     $arkrelatedpost = get_ark_related_posts();
@@ -376,7 +424,6 @@ function ark_related_posts_auto( $content ) {
 	}
     return $content;
 }
-
 
 function ark_content_rss($more_link_text='(more...)', $stripteaser=0, $more_file='', $cut = 0, $encode_html = 0) {
 	_deprecated_function( __FUNCTION__, '2.9', 'the_content_feed' );

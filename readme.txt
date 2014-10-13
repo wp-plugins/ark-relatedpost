@@ -1,10 +1,10 @@
 === ARK Related Posts ===
 Contributors: AlexKar
 Donate link: http://blog.ddw.kz/podderzhka-proektov-avtora-etogo-bloga
-Tags: related, posts, post
+Tags: related, posts, post, related posts, related content, feeds, rss, related posts for wordpress, related posts for wp, relations, seo
 Requires at least: 3.0
 Tested up to: 4.0
-Stable tag: 2.2
+Stable tag: 2.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,9 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
+= 2.3 =
+Пофиксены мелкие ошибки. Расширена возможность настройки внешнего вида.
+
 = 2.2 =
 Закрыта ссылка, ведущая на страницу поддержки.
 
@@ -57,6 +60,13 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Первая версия
 
 == Upgrade Notice ==
+
+= 2.3 =
+* Добавлена возможность делать фон блока прозрачным.
+* Теперь можно просто убрать рамку вокруг блока.
+* Можно убрать тень заголовка либо выбрать её цвет.
+* Углы блока можно настроить без закругления.
+* Углы миниатюры можно настроить без закругления.
 
 = 2.2 =
 Закрыта ссылка, ведущая на страницу поддержки.

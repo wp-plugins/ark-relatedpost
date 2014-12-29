@@ -1,10 +1,10 @@
 === ARK Related Posts ===
 Contributors: AlexKar
 Donate link: http://blog.ddw.kz/podderzhka-proektov-avtora-etogo-bloga
-Tags: related, posts, post, related posts, related content, feeds, rss, related posts for wordpress, related posts for wp, relations, seo
+Tags: related posts, related post, related, posts, post
 Requires at least: 3.0
 Tested up to: 4.1
-Stable tag: 2.3
+Stable tag: 2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,9 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
+= 2.4 =
+Облагорожен вывод записей. Расширена возможность настройки внешнего вида.
+
 = 2.3 =
 Пофиксены мелкие ошибки. Расширена возможность настройки внешнего вида.
 
@@ -60,6 +63,13 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 * Первая версия
 
 == Upgrade Notice ==
+
+= 2.4 =
+* Переработан дизайн вывода связанных записей.
+* Добавлены тонкие настройки тени заголовка блока.
+* Можно явно задать отступ заголовка от верхнего края блока.
+* Убраны лишние рамки.
+* Добавлено выделение при наведении курсора.
 
 = 2.3 =
 * Добавлена возможность делать фон блока прозрачным.

@@ -4,7 +4,7 @@ Plugin Name: ark-relatedpost
 Author: Александр Каратаев
 Plugin URI: http://blog.ddw.kz/novyj-plagin-vyvoda-svyazannyx-zapisej-ark-relatedpost.html
 Description: Вывод связанных записей на основе тегов
-Version: 2.3
+Version: 2.4
 Author URI: http://blog.ddw.kz
 License: GPL2
 */
@@ -56,7 +56,11 @@ $ark_option = array(
 'ark_titlecolor' => '#215B9B',
 'ark_titleshadow' => '1',
 'ark_titleshadowcolor' => '#5DB6FA',
+'ark_titleshadowx' => '1',
+'ark_titleshadowy' => '1',
+'ark_titleshadowr' => '1',
 'ark_titlefontsize' => '20',
+'ark_titletop' => '4',
 'ark_textcolor' => '#000',
 'ark_textfontsize' => '12',
 'ark_orientation' => '0',
@@ -94,7 +98,7 @@ add_action( 'admin_enqueue_scripts', 'add_admin_iris_scripts' );
 // Вывод страницы опций в субменю
 function ark_rp_options_page() {
 	screen_icon('users');
-    echo '<h2>Плагин&nbsp;ark-relatedpost&nbsp;2.3</h2><div style="clear: both;float:right; padding-right:20px;"><noindex><a rel="nofollow" href="http://blog.ddw.kz/podderzhka-proektov-avtora-etogo-bloga
+    echo '<h2>Плагин&nbsp;ark-relatedpost&nbsp;2.4</h2><div style="clear: both;float:right; padding-right:20px;"><noindex><a rel="nofollow" href="http://blog.ddw.kz/podderzhka-proektov-avtora-etogo-bloga
 " target="_blank"><img align="right" src="' . plugins_url( '/img/button-donate.png', __FILE__ ) . '" alt="Пожертвовать" border="0" /></a></noindex></div>';
 ?>	
 <div class="wrap">
@@ -113,8 +117,12 @@ $ark_option = array(
 'ark_titlecolor' => $_POST['ark_titlecolor'],
 'ark_titleshadow' => $_POST['ark_titleshadow'],
 'ark_titleshadowcolor' => $_POST['ark_titleshadowcolor'],
+'ark_titleshadowx' => $_POST['ark_titleshadowx'],
+'ark_titleshadowy' => $_POST['ark_titleshadowy'],
+'ark_titleshadowr' => $_POST['ark_titleshadowr'],
 'ark_textcolor' => $_POST['ark_textcolor'],
 'ark_titlefontsize' => $_POST['ark_titlefontsize'],
+'ark_titletop' => $_POST['ark_titletop'],
 'ark_textfontsize' => $_POST['ark_textfontsize'],
 'ark_orientation' => $_POST['ark_orientation'],
 'ark_subtitlefontsize' => $_POST['ark_subtitlefontsize'],
@@ -183,6 +191,7 @@ $result = get_option('ark_relpost');
 <table>
 <tr>
 <td>Заголовок блока <input type="text" name="ark_title" size="40" value="<?php echo $result['ark_title']; ?>" /></td>
+<td>Отступ от верхнего края блока <input type="number" min="2" max="50" name="ark_titletop" size="2" value="<?php echo $result['ark_titletop']; ?>" /> <b>px</b>&nbsp;</td>
 </tr></table><table><tr>
 <td>Размер шрифта <input type="number" min="8" max="36" name="ark_titlefontsize" size="2" value="<?php echo $result['ark_titlefontsize']; ?>" /> <b>px</b>&nbsp;</td>
 <td><input class="iris_color" name="ark_titlecolor" type="text" value="<?php echo $result['ark_titlecolor']; ?>" /></td>
@@ -190,7 +199,13 @@ $result = get_option('ark_relpost');
 <tr>
 <td>Эффект тени шрифта заголовка <input type="checkbox" name="ark_titleshadow" value="1" <?php if ($result['ark_titleshadow'] == 1) { echo "checked"; } ?>/> </td>
 <td><input class="iris_color" name="ark_titleshadowcolor" type="text" value="<?php echo $result['ark_titleshadowcolor']; ?>" /></td>
-</tr><tr><td colspan="2"><br><hr></td></tr>
+</tr>
+<tr><td colspan="2">
+<b>Настройка тени:</b></td></tr><tr><td>&nbsp;сдвиг по X <input type="number" min="0" max="6" name="ark_titleshadowx" size="2" value="<?php echo $result['ark_titleshadowx']; ?>" /> <b>px</b>&nbsp;</td><td>
+&nbsp;сдвиг по Y <input type="number" min="0" max="6" name="ark_titleshadowy" size="2" value="<?php echo $result['ark_titleshadowy']; ?>" /> <b>px</b>&nbsp;
+&nbsp;размытие <input type="number" min="0" max="6" name="ark_titleshadowr" size="2" value="<?php echo $result['ark_titleshadowr']; ?>" /> <b>px</b>&nbsp;
+</td></tr>
+<tr><td colspan="2"><br><hr></td></tr>
 </table>
 <br>
 <table>
@@ -317,11 +332,12 @@ $arkimgborderradius = 'border-radius: '.$result['ark_imgborderradius'].'px;
 -webkit-border-bottom-right-radius:'.$result['ark_imgborderradius'].'px;
 -webkit-border-top-left-radius:'.$result['ark_imgborderradius'].'px;
 -webkit-border-top-right-radius:'.$result['ark_imgborderradius'].'px;';
-if ($result['ark_titleshadow'] == 1) {$arktitleshadow = 'text-shadow: '. $result['ark_titleshadowcolor'] .' 0px 1px 1px !important;'; } else {$arktitleshadow = 'text-shadow: 0px 0px 0px !important;';}
+if ($result['ark_titleshadow'] == 1) {$arktitleshadow = 'text-shadow:'. $result['ark_titleshadowx'] .'px '. $result['ark_titleshadowy'] .'px '. $result['ark_titleshadowr'] .'px '. $result['ark_titleshadowcolor'] .' !important;'; } else {$arktitleshadow = 'text-shadow: 0px 0px 0px !important;';}
 if ($result['ark_nobgcolor'] == 1) {$arkbgcolor = 'background: none !important;'; } else {$arkbgcolor = 'background:' . $result['ark_bgcolor'] .' !important;';}
 if ($result['ark_nobordercolor'] == 1) {$arkborder = 'border: 0px !important;'; $arkborderradius=''; } else {$arkborder = 'border: 1px solid ' . $result['ark_bordercolor'] .' !important;';}
 
 $MaxGPosts = 0;
+$CntPosts = 0;
 if ($result['ark_source']==0) {
 	$tags = wp_get_post_tags(get_the_ID());
 	if ($tags) {
@@ -350,64 +366,98 @@ if ($result['ark_source']==0) {
 	$my_query = new wp_query($args);
 	$outtmp = '';
 	if( $my_query->have_posts() ) {
-		$arkrpbeg = '<div class="arkrelated" style="'.$arkbgcolor . ' width:' . $result['ark_width'] .'%; '.$arkborder.$arkborderradius.'">';
-		$arkrpbeg = $arkrpbeg . '<h3 style="color:' . $result['ark_titlecolor'] . '; font-size:' . $result['ark_titlefontsize'] . 'px; '.$arktitleshadow.'">' . $result['ark_title'] . '</h3>';
-		$arkrpbeg = $arkrpbeg . '<table width="100%" border="0">';
-		$arkrpend = '</table></div>';
+		// Основной блок
+		$arkrpbeg = '<div class="arkrelated" style="display:inline-block; '.$arkbgcolor . ' width:' . $result['ark_width'] .'%;'.$arkborder.$arkborderradius.'">';
+		// Заголовок основного блока
+		$arkrpbeg = $arkrpbeg . '<h3 style="margin-top: ' . $result['ark_titletop'] . 'px; color:' . $result['ark_titlecolor'] . '; font-size:' . $result['ark_titlefontsize'] . 'px; '.$arktitleshadow.'">' . $result['ark_title'] . '</h3>';
+		$arkrpbeg = $arkrpbeg . '';
+		$arkrpend = '</div>';
 		$arksubtitlesymbol = trim($result['ark_subtitlesymbol']);
 		if ($arksubtitlesymbol!= '') {
 			$arksubtitlesymbol.='&nbsp;';
 		}
+		if ($result['ark_nobgcolor'] == 1) {$arkbgdivcolor = 'none'; } else {$arkbgdivcolor = $result['ark_bgcolor'] ;}
         while ($my_query->have_posts()) {
 			$my_query->the_post();
-			$arkpostlinks = get_permalink(); 
-			$arksubtitle = '<b><a style="font-size:' . $result['ark_subtitlefontsize'] . 'px; color:' . $result['ark_subtitlecolor'] . ';" href="' . $arkpostlinks . '" rel="bookmark" title="Перейти на запись">' . $arksubtitlesymbol . get_the_title() . '</a></b>';
+			$arkpostlinks = get_permalink();
 			if ($result['ark_orientation']==0) { 
-				$arkrpbegpost = '<tr><td>';
-				$arkrpendpost = '</td></tr>';
-				$arkpafterimage='';
+			// Настройки вертикального вывода
+				$arkrpbegpost = '<div  class="mtrans" style="'.$arkbgcolor .'width:100%; border:0px; cursor:pointer !important;">';
+				$arkrpendpost = '</div>';
+				$arkpbeforeimage='<div class="nohover" style="display:inline; float: left; border:0px; margin: 4px; width:' . ($result['ark_imgsize']+4) . 'px; padding-right:6px;">';
+				$arkpafterimage='</div>';
 				$arkimgalign = 'left';
+				$arkdivstyle = 'float: left; border:0px; line-height: 110% !important; padding-top:10px; font-weight: normal !important; text-align: left !important;';
 			} else {
-				$MaxGPosts++;
-				if ($MaxGPosts>$result['ark_maxgposts']) { 
-					$arkrpbegpost = '</tr><tr><td style="vertical-align: top;"><center>'; 
-					$MaxGPosts=0; 
-				} else {
-					$arkrpbegpost = '<td style="vertical-align: top;">';
-				}
+				// Настройки горизонтального вывода
 				if ($result['ark_maxgposts']>0) {
-					$arkmaxprocwidth = (100/$result['ark_maxgposts']) + '%;';
+					$arkmaxprocwidth = intval(100/$result['ark_maxgposts'])-1 . '%;';
 				} else {
 					$arkmaxprocwidth = '25%;';
 				}
-				$arkrpbegpost = $arkrpbegpost . '<table><tr valign="top"><td style="vertical-align: top; text-align:center; maxwidth:'.$arkmaxprocwidth.'" width="'.$arkmaxprocwidth.'" height="100%">';
-				$arkrpendpost = '</td></tr></table></td>';
-				$arkpafterimage='</center></td></tr><tr><td>';
+				$MaxGPosts++;
+				$CntPosts++;
+				if ($MaxGPosts==1 && $CntPosts==1) {
+					$arkdivtbl = '<table><tr><td class="mtrans" style="max-width:'.$arkmaxprocwidth.'" width="'.$arkmaxprocwidth.'" height="100%; min-height="100%; cursor:pointer !important;">';
+				} else {
+					$arkdivtbl = '<td class="mtrans" style="max-width:'.$arkmaxprocwidth.'" width="'.$arkmaxprocwidth.'" height="100%; min-height="100%; cursor:pointer !important;">';
+				}
+				$arkrpbegpost = '<div style="position:relative; top: 0px; z-index:9999999; border:0px; margin:2px; text-align:left !important; height:100%; min-height:100%;">';
+				if ($MaxGPosts>$result['ark_maxgposts']) { 
+					//$arkrpbegpost = '' . $arkrpbegpost; 
+					$MaxGPosts=1; 
+					$arkdivtbl = '</tr><tr><td class="mtrans" style="max-width:'.$arkmaxprocwidth.'" width="'.$arkmaxprocwidth.'" height="100%; min-height="100%; cursor:pointer !important;">';
+					} 
+				$arkrpendpost = '</div></td>';
+				$arkpbeforeimage='<center class="nohover">';
+				$arkpafterimage='</center>';
 				$arkimgalign = 'top';
-				$arksubtitle = '<center>' . $arksubtitle . '</center>';
-		  }
-		  $arkpimg = '<img width="' . $result['ark_imgsize'] . 'px" height="' . $result['ark_imgsize'] . 'px" align="'.$arkimgalign.'" style="'.$arkimgborderradius.'" src="' . ark_that_image($userimgurl) . '" />';	
+				$arkdivstyle = 'height: 100%; border:0px; line-height: 110% !important; font-weight: normal !important; text-align: left !important;';
+			}
+			// Конец настроек вывода
+			// Определяем картинку
+			$arkpimg = '<img class="nohover" width="' . $result['ark_imgsize'] . 'px" height="' . $result['ark_imgsize'] . 'px" align="'.$arkimgalign.'" style="'.$arkimgborderradius.'" src="' . ark_that_image($userimgurl) . '" />';	
+			$arkpimg = $arkpbeforeimage . $arkpimg . $arkpafterimage;
 		 if ($result['ark_imgsize']>0) {
-			$arkrp = '<a href="'.$arkpostlinks.'">';
+			/*$arkrp = '<a class="nohover" href="'.$arkpostlinks.'">';*/
 			$arkrp = $arkrp . $arkpimg;	
-			$arkrp = $arkrp . '</a>' . $arkpafterimage;
+			/*$arkrp = $arkrp . '</a>' ;*/
 		  
 		  } else {
 			$arkrp = '';
 		  }
-		  $arkrp = $arkrp . $arksubtitle;
+		  $arkpimg = $arkrp;
+		  $arkrp = '';
+		  // Конец определения картинки
+		// Заголовок записи
+			$arksubtitle = '<div class="nohover" style="'.$arkdivstyle.'"><span class="nohover" style="font-weight: bold; font-size:' . $result['ark_subtitlefontsize'] . 'px; color:' . $result['ark_subtitlecolor'] . ';">' . $arksubtitlesymbol . get_the_title() . '</span></div>';	
+			//$arkrp = $arkrp .$arksubtitle;
+		  // Вывод описания
 		 if ($arkMaxWord > 0) {	
-			$arkrp = $arkrp . '<br /><font style="color:' . $result['ark_textcolor'] . '; font-size:' . $result['ark_textfontsize'] . 'px; line-height: 1.4;">';
+			$arkrp = $arkrp . '<div class="nohover" style="margin:5px 0px 5px 0px; color:' . $result['ark_textcolor'] . '; font-size:' . $result['ark_textfontsize'] . 'px; '.$arkdivstyle.'">';
 		 	$arkrp = $arkrp . ark_content_rss('', TRUE, '', $arkMaxWord); 
-			 $arkrp = $arkrp . '</font>';	
+			 $arkrp = $arkrp . '</div>';	
+			$arkopis = $arkrp; 
 		  } 
-		  $outtmp = $outtmp . $arkrpbegpost . $arkrp . $arkrpendpost;
-		  $arkrpbegpost = '';
+		  // Конец настроек вывода
+		  if ($result['ark_orientation']==0) { 
+			$outtmp = $outtmp . '<a class="nohover" href="'.$arkpostlinks.'">' . $arkrpbegpost . '<table class="nohover"><tr><td class="nohover">'. $arkpimg . '</td><td class="nohover" style="vertical-align: top;">'.$arksubtitle . $arkopis .'</td></tr></table>'. $arkrpendpost . '</a>';
+			}else{
+			$outtmp = $outtmp . $arkdivtbl . '<a class="nohover" style="vertical-align: top;" href="'.$arkpostlinks.'">' . $arkrpbegpost . $arkpimg . $arksubtitle . $arkopis . $arkrpendpost . '</a>';	
+		}
+
+		 $arkrpbegpost = '';
 		  $arkrp = '';
 		  $arkrpendpost = '';
 		  
         }
-		$out = $arkrpbeg . $outtmp . $arkrpend;	
+		if ($result['ark_orientation']==0) {
+			$outtmp = $outtmp . '';
+		}
+			$out = $arkrpbeg . $outtmp . '</tr></table>' . $arkrpend;	
+			
+			
+			
 		//echo $out;
 		
 		wp_reset_query();
